@@ -579,7 +579,7 @@ $('sndBtn').onclick=function(){MUTE=!MUTE;try{localStorage.setItem('btc2mute',MU
     var o={};try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf('btc')===0&&!SKIP[k])o[k]=localStorage.getItem(k)}}catch(e){}
     return 'BTC1:'+btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
   $('expBtn').onclick=function(){
-    saveShop();var c=exportCode();
+    clearTimeout(__ct);flushCoins();saveShop();var c=exportCode();
     function fallback(){window.prompt('Скопируй этот код и сохрани его:',c);st('Код показан — сохрани его')}
     try{navigator.clipboard.writeText(c).then(function(){st('Код скопирован в буфер обмена ✓')},fallback)}catch(e){fallback()}};
   $('impBtn').onclick=function(){
@@ -589,7 +589,7 @@ $('sndBtn').onclick=function(){MUTE=!MUTE;try{localStorage.setItem('btc2mute',MU
       if(c.indexOf('BTC1:')!==0)throw 0;
       var o=JSON.parse(decodeURIComponent(escape(atob(c.slice(5)))));
       if(typeof o!=='object'||!o||o.btc2===undefined&&!o.btc2shop)throw 0;
-      for(var k in o){if(k.indexOf('btc')===0&&!SKIP[k])localStorage.setItem(k,String(o[k]))}
+      clearTimeout(__ct);for(var k in o){if(k.indexOf('btc')===0&&!SKIP[k])localStorage.setItem(k,String(o[k]))}if(o.btc2!==undefined){coins=parseInt(o.btc2)||0;flushCoins()}
       st('Прогресс загружен ✓');setTimeout(function(){location.reload()},500)
     }catch(e){st('Неверный код ✗')}};
 })();
@@ -1598,4 +1598,4 @@ box.querySelector('button').onclick=function(){location.reload()};box.querySelec
 iv=setInterval(show,3000);setTimeout(chk,4000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,300000)})();
 </script>
 </body>
-</html>
+  </html>
