@@ -561,6 +561,7 @@ function planeSvg(k){var i;if(k.sh==='ufo')i='<ellipse cx="0" cy="4" rx="24" ry=
   else i='<polygon points="'+PL[k.sh].map(function(q){return q.join(',')}).join(' ')+'" fill="'+k.c+'"/>';
   return '<svg viewBox="-28 -28 56 56"><polygon class="fl" points="-4,18 0,29 4,18" fill="#ffb020" opacity=".9"/>'+i+'</svg>'}
 function pv(k,it){
+  if(k==='sk'&&it.gh&&!owned(k,it.id))return '<svg viewBox="-32 -32 64 64"><polygon points="'+PL.abyss.map(function(q){return q.join(',')}).join(' ')+'" fill="#3a3a3a"/></svg>';
   if(k==='sk')return planeSvg(it);
   if(k==='bg')return '<div class="swatch" style="background:linear-gradient(135deg,'+it.c[0]+','+it.c[1]+')"></div>';
   if(k==='bl')return '<div class="swatch r" style="background:'+(it.rb?'conic-gradient(red,orange,yellow,lime,cyan,blue,magenta,red)':it.c)+'"></div>';
@@ -568,11 +569,12 @@ function pv(k,it){
   return '<div class="f-'+it.id+' pvbox"><div class="sbox">1234</div></div>';
 }
 function card(k,it){
-  var own=owned(k,it.id),sel=cur(k)===it.id,d=' data-k="'+k+'" data-id="'+it.id+'"',btn;
+  var own=owned(k,it.id),sel=cur(k)===it.id,sec=!!it.gh&&!own,d=' data-k="'+k+'" data-id="'+it.id+'"',btn;
   if(sel)btn='<button class="eq" disabled>Выбран</button>';
   else if(own)btn='<button'+d+'>Выбрать</button>';
+  else if(sec)btn='<button class="eq" disabled>🔒 Секрет</button>';
   else btn='<button'+d+(coins<it.price?' class="no"':'')+'>'+it.price+' ₿</button>';
-  var rc=(k==='sk'?rarS(it.price):rar(it.price));return '<div class="card r-'+rc+(sel?' sel':'')+(lastBuy===k+it.id?' bflash':'')+'">'+(own?'<span class="own">✓ Куплено</span>':'')+pv(k,it)+'<span class="nm">'+it.n+(it.em?' '+it.em:'')+'</span><span class="rar">'+RN[rc]+'</span>'+btn+'</div>';
+  var rc=sec?'c':(k==='sk'?rarS(it.price):rar(it.price));return '<div class="card r-'+rc+(sel?' sel':'')+(lastBuy===k+it.id?' bflash':'')+'">'+(own?'<span class="own">✓ Куплено</span>':'')+(sec?'<span style="font-size:30px;font-weight:800;color:#ffb020;line-height:1">?</span>':'')+pv(k,it)+'<span class="nm">'+it.n+(it.em?' '+it.em:'')+'</span>'+(sec?'':'<span class="rar">'+RN[rc]+'</span>')+btn+'</div>';
 }
 function renderShop(){
   var h='';
@@ -599,7 +601,7 @@ $('shop').addEventListener('click',function(e){
   if(d.tab){setTab(d.tab);return}
   if(d.buy){var pr=d.buy==='shield'?100:120;if(!S[d.buy]&&buy(pr)){S[d.buy]=1;lastBuy='';buyFx()}}
   else if(d.k){var it=LIST(d.k).filter(function(x){return x.id===d.id})[0];
-    if(owned(d.k,d.id))equip(d.k,d.id);else if(buy(it.price)){give(d.k,d.id);equip(d.k,d.id);lastBuy=d.k+d.id;buyFx()}}
+    if(owned(d.k,d.id))equip(d.k,d.id);else if(it.gh)return;else if(buy(it.price)){give(d.k,d.id);equip(d.k,d.id);lastBuy=d.k+d.id;buyFx()}}
   else return;
   saveShop();renderShop();lastBuy='';
 });
@@ -1811,4 +1813,4 @@ var _eD=draw0,eN=performance.now();draw0=function(py){var n=performance.now(),dt
 var _eNG=newGame;newGame=function(){endClose();_eNG()};
 </script>
 </body>
-    </html>
+  </html>
